@@ -1,11 +1,20 @@
 Package: kerneval
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Title: Kernel Density Estimation With Sampling-biased Data 
+Version: 0.0.0.9000
+Authors@R: person('Gwen', 'Antell', email='gwen.antell@earth.ox.ac.uk', 
+                  role=c('aut','cre'))
+Depends: R (>= 3.6)
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Imports:
+    GoFKernel,
+	pracma,
+	stats
+Suggests:
+    ecospat,
+    testthat
+RoxygenNote: 7.1.0
