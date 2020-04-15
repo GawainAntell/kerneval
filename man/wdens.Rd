@@ -24,7 +24,7 @@ on the original, untransformed scale. Default is \code{min(x)}.}
 \item{b}{The upper limit for density estimation,
 on the original, untransformed scale. Default is \code{max(x)}.}
 
-\item{...}{Further arguments passed on to \code{base::density}.}
+\item{...}{Further arguments passed on to \code{stats::density}.}
 }
 \description{
 Weight a Biased Sample to Estimate Density
