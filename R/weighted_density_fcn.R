@@ -1,3 +1,5 @@
+# TODO edit wdens to avoid message:
+# For infinite domains Gauss integration is applied!
 
 # Not necessary to export this function.
 # Borrajo et al. 2017 bandwidth estimation for biased data:
@@ -20,11 +22,11 @@ strappy <- function(Y, w, method='brt'){
 
   # estimate rule-of-thumb bandwidth
   K2u <- function(u){
-    dnorm(u)^2
+    stats::dnorm(u)^2
   }
   Rk <- pracma::integral(K2u, -Inf, Inf)
   u2k <- function(u){
-    u^2 * dnorm(u)
+    u^2 * stats::dnorm(u)
   }
   mu2K <- pracma::integral(u2k, -Inf, Inf)
   # for a Gaussian kernel, mu2k = 1
@@ -42,12 +44,12 @@ strappy <- function(Y, w, method='brt'){
 
     wtsUnscld <- 1 / w(Y)
     wts <- wtsUnscld / sum(wtsUnscld)
-    fgDens <- density(Y, bw = rt, kernel = 'gaussian', weights = wts)
-    fg <- splinefun(fgDens$x, fgDens$y)
+    fgDens <- stats::density(Y, bw = rt, kernel = 'gaussian', weights = wts)
+    fg <- stats::splinefun(fgDens$x, fgDens$y)
 
     # take 2nd deriv of smooth f estimate, square it, and integrate
     f2g_y <- fg(fgDens$x, deriv=2)
-    f2g <- approxfun(fgDens$x, f2g_y)
+    f2g <- stats::approxfun(fgDens$x, f2g_y)
     f2g_sq <- function(u){
       f2g(u)^2
     }
@@ -84,7 +86,7 @@ wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
 
   # select bandwidth
   if (is.numeric(bw)){
-    h <- argmts$bw
+    h <- bw
   } else {
     if (! bw %in% c('brt','rt')){
       stop('bw method must be brt or rt')
@@ -95,11 +97,12 @@ wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
   if (reflect){
     kde <- density.reflected(x, bw = h, lower = a, upper = b, weights = wts, ...)
   } else {
-    kde <- density(x, bw = h, from = a, to = b, weights = wts, ...)
+    kde <- stats::density(x, bw = h, from = a, to = b, weights = wts, ...)
   }
 
-  f <- approxfun(kde$x, kde$y)
-  lwr <- min(kde$x)
-  upr <- max(kde$x)
-  append(list(f=f, lower=lwr, upper=upr), kde)
+#  f <- stats::approxfun(kde$x, kde$y)
+#  lwr <- min(kde$x)
+#  upr <- max(kde$x)
+#  append(list(f=f, lower=lwr, upper=upr), kde)
+  return(kde)
 }

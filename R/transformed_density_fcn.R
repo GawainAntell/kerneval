@@ -8,7 +8,7 @@
 #' on the original, untransformed scale. Default is \code{min(x)}.
 #' @param b The upper limit for density estimation,
 #' on the original, untransformed scale. Default is \code{max(x)}.
-#' @param ... Further arguments passed on to \code{base::density}.
+#' @param ... Further arguments passed on to \code{stats::density}.
 
 # Barmi & Simonoff 2000 method
 # One should NOT provide the arguments to/from or lower/upper.
@@ -42,7 +42,7 @@ transdens <- function(x, w, reflect = FALSE, a=NULL, b=NULL, ...){
   if (reflect){
     kde <- density.reflected(Y, lower = aYscale, upper = bYscale, ...)
   } else {
-    kde <- density(Y, from = aYscale, to = bYscale, ...)
+    kde <- stats::density(Y, from = aYscale, to = bYscale, ...)
   }
 
   # scale to integrate to one
@@ -58,9 +58,10 @@ transdens <- function(x, w, reflect = FALSE, a=NULL, b=NULL, ...){
 
   # if w(x) is undefined at 0, then min and max of X can be off
   # (albeit only slightly) from values at which kernel can estimate
-  f <- approxfun(kde$x, kde$y)
-  lwr <- min(kde$x)
-  upr <- max(kde$x)
+#  f <- stats::approxfun(kde$x, kde$y)
+#  lwr <- min(kde$x)
+#  upr <- max(kde$x)
+#  append(list(f=f, lower=lwr, upper=upr), kde)
 
-  append(list(f=f, lower=lwr, upper=upr), kde)
+  return(kde)
 }
