@@ -32,8 +32,8 @@ test_that('wdens can return bandwidth value', {
 })
 
 test_that('density estimate integrates to unity', {
-  fWeight <- approxfun(je$x, je$y)
-  fTrans  <- approxfun(te$x, te$y)
+  fWeight <- stats::approxfun(je$x, je$y)
+  fTrans  <- stats::approxfun(te$x, te$y)
   intWeight <- integrate(fWeight, min(je$x), max(je$x))
   intTrans  <- integrate(fTrans, min(te$x), max(te$x))
   expect_equal(intWeight$value, 1, tolerance = 0.1)

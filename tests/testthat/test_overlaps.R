@@ -2,10 +2,10 @@ context('Overlap values')
 library(kerneval)
 
 normPdf <- function(x, shft){
-  dnorm(x, (25 + shft), sd=9.7)
+  stats::dnorm(x, (25 + shft), sd=9.7)
 }
 normSim <- function(n, shft){
-  rnorm(n, (25 + shft), sd=9.7)
+  stats::rnorm(n, (25 + shft), sd=9.7)
 }
 # With a mean=25, sd=9.7, 99% of normal distribution mass falls from 0-50
 # p <- 0.99 + pnorm(0, mean=25, sd=9.7)

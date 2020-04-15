@@ -10,8 +10,8 @@ density.reflected <- function (x, lower = -Inf, upper = Inf,
     warning("There are values in the sample higher than the upper limit")
   if (lower > min(x))
     warning("There are values in the sample smaller than the lower limit")
-  if (sd(x) == 0) {
-    dx <- density(c(x, x[1] + .Machine$double.eps, x[1] -
+  if (stats::sd(x) == 0) {
+    dx <- stats::density(c(x, x[1] + .Machine$double.eps, x[1] -
                       .Machine$double.eps))
   }
   else {
@@ -31,17 +31,17 @@ density.reflected <- function (x, lower = -Inf, upper = Inf,
     }
     else {
       pesos <- pesos/sum(pesos)
-      broad <- 4 * density(x, weights = pesos, ...)$bw
+      broad <- 4 * stats::density(x, weights = pesos, ...)$bw
     }
     if (is.infinite(lower) & is.infinite(upper)) {
-      dx <- density(x, weights = pesos, ...)
+      dx <- stats::density(x, weights = pesos, ...)
     }
     else if (is.infinite(lower) & is.finite(upper)) {
       reflected <- which(x >= (upper - broad))
       x.reflect <- c(x, 2 * upper - x[reflected])
       p.reflect <- c(pesos, pesos[reflected])
       p.reflect <- p.reflect/sum(p.reflect)
-      dx <- density(x.reflect, weights = p.reflect, ...)
+      dx <- stats::density(x.reflect, weights = p.reflect, ...)
       dx$y <- (dx$y[dx$x >= lower & dx$x <= upper])
       dx$x <- (dx$x[dx$x >= lower & dx$x <= upper])
       bw <- dx$x[2] - dx$x[1]
@@ -53,7 +53,7 @@ density.reflected <- function (x, lower = -Inf, upper = Inf,
       x.reflect <- c(x, -x[reflected] + 2 * lower)
       p.reflect <- c(pesos, pesos[reflected])
       p.reflect <- p.reflect/sum(p.reflect)
-      dx <- density(x.reflect, weights = p.reflect, ...)
+      dx <- stats::density(x.reflect, weights = p.reflect, ...)
       dx$y <- dx$y[dx$x >= lower & dx$x <= upper]
       dx$x <- dx$x[dx$x >= lower & dx$x <= upper]
       bw <- dx$x[2] - dx$x[1]
@@ -68,7 +68,7 @@ density.reflected <- function (x, lower = -Inf, upper = Inf,
       x.reflect <- c(x.reflect, 2 * upper - x[reflected.sup])
       p.reflect <- c(p.reflect, pesos[reflected.sup])
       p.reflect <- p.reflect/sum(p.reflect)
-      dx <- density(x.reflect, weights = p.reflect, ...)
+      dx <- stats::density(x.reflect, weights = p.reflect, ...)
       dx$y <- dx$y[dx$x >= lower & dx$x <= upper]
       dx$x <- dx$x[dx$x >= lower & dx$x <= upper]
       bw <- dx$x[2] - dx$x[1]

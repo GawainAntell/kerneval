@@ -30,12 +30,12 @@ hell <- function (d1, d2, extrap=TRUE) {
     }
   }
 
-  fun1 <- approxfun(d1$x, d1$y)
-  fun2 <- approxfun(d2$x, d2$y)
+  fun1 <- stats::approxfun(d1$x, d1$y)
+  fun2 <- stats::approxfun(d2$x, d2$y)
   intgrnd <- function(x) sqrt(fun1(x) * fun2(x))
   a <- max(min(d1$x), min(d2$x))
   b <- min(max(d1$x), max(d2$x))
-  int <- integral(intgrnd, a, b)
+  int <- pracma::integral(intgrnd, a, b)
   if (int > 1){
     int <- 1
     warning('estimated Bhattacharyya distance greater than 1')
@@ -49,10 +49,10 @@ hell <- function (d1, d2, extrap=TRUE) {
 #' @return A numeric value between 0 and 1 inclusive.
 
 # Schroener's D, continuous version
-schronr <- function (d1, d2) {
+schroenr <- function (d1, d2) {
   if (identical(d1$x, d2$x)){
     diff <- abs(d1$y - d2$y)
-    difFun <- approxfun(d1$x, diff)
+    difFun <- stats::approxfun(d1$x, diff)
   } else {
     # TODO: add option here to use only the x-axis of overlap
   #  a <- max(min(d1$x), min(d2$x))
@@ -79,14 +79,14 @@ schronr <- function (d1, d2) {
       d2$y <- c(d2$y, 0)
     }
 
-    fun1 <- approxfun(d1$x, d1$y)
-    fun2 <- approxfun(d2$x, d2$y)
+    fun1 <- stats::approxfun(d1$x, d1$y)
+    fun2 <- stats::approxfun(d2$x, d2$y)
     diffFun <- function(x){
       abs(fun1(x) - fun2(x))
     }
   }
 
-  int <- integral(diffFun, a, b)
+  int <- pracma::integral(diffFun, a, b)
   if (int > 2){
     int <- 2
     warning('estimated integrated overlap greater than 2')
