@@ -4,6 +4,7 @@
 #' @param extrap Logical. If axes limits of `d1` and `d2` differ, should
 #' they be extrapolated to match? The extended region will have density of 0.
 #' @return A numeric value between 0 and 1 inclusive.
+#' @export
 
 # Hellinger's H
 hell <- function (d1, d2, extrap=TRUE) {
@@ -47,6 +48,7 @@ hell <- function (d1, d2, extrap=TRUE) {
 #' Calculate Schoener's D metric of niche overlap
 #' @inheritParams hell
 #' @return A numeric value between 0 and 1 inclusive.
+#' @export
 
 # Schroener's D, continuous version
 schroenr <- function (d1, d2) {

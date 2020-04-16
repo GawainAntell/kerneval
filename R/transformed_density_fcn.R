@@ -1,5 +1,7 @@
 #' Transform a Biased Sample to Estimate Density
 #'
+#' @seealso \code{\link{wdens}}
+#'
 #' @param x A numeric vector from which the estimate is to be computed.
 #' @param w A function that gives the probability of observation
 #' at any single value in the range of \code{x}.
@@ -8,7 +10,8 @@
 #' on the original, untransformed scale. Default is \code{min(x)}.
 #' @param b The upper limit for density estimation,
 #' on the original, untransformed scale. Default is \code{max(x)}.
-#' @param ... Further arguments passed on to \code{stats::density}.
+#' @param ... Further arguments passed on to \code{\link[stats]{density}}.
+#' @export
 
 # Barmi & Simonoff 2000 method
 # One should NOT provide the arguments to/from or lower/upper.

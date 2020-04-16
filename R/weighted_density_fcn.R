@@ -1,9 +1,15 @@
 # TODO edit wdens to avoid message:
 # For infinite domains Gauss integration is applied!
 
-# Not necessary to export this function.
-# Borrajo et al. 2017 bandwidth estimation for biased data:
-# rule of thumb or bootstrap method
+#' Borrajo et al. 2017 bandwidth selection
+#' @param Y A numeric vector of observations.
+#' @param w A function that gives the probability of observation
+#' # at any single value in the range of \code{Y}.
+#' @param method One of \code{c('rt', 'brt')}.
+#' \code{rt} is the rule-of-thumb estimate; \code{brt} is a bootstrap estimate
+#' with the rule-of-thumb as the pilot.
+#' @keywords internal
+
 strappy <- function(Y, w, method='brt'){
   if (! method %in% c('brt','rt')){
     stop('method must be brt or rt')
@@ -66,10 +72,13 @@ strappy <- function(Y, w, method='brt'){
 
 #' Weight a Biased Sample to Estimate Density
 #'
+#' @seealso \code{\link{transdens}}
+#'
 #' @inheritParams transdens
 #' @param bw A method to estimate the kernel bandwidth from Borrajo et al. 2017.
 #' \code{rt} is the rule-of-thumb estimate; \code{brt} is a bootstrap estimate
 #' with the rule-of-thumb as the pilot.
+#' @export
 
 # weighted kernel density estimation after Jones 1991
 # bw argument can be rt, brt, or a numeric width to use

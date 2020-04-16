@@ -1,4 +1,12 @@
 
+#' Modification of GoFKernel density.reflected function
+#' @param x A numeric vector of observations.
+#' @param lower The lower bound across which data will be reflected.
+#' @param upper The upper bound across which data will be reflected.
+#' @param weights An optional vector of weights with length of \code{x}.
+#' @return An S3 density.reflected class object?
+#' @keywords internal
+
 # DO NOT EXPORT THIS FUNCTION.
 # density.reflected is a function from GoFKernel, and is modified here
 # to handle the case where bw arg is given as non-integer, e.g. 'nrd0'.
