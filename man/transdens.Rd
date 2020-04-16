@@ -20,8 +20,11 @@ on the original, untransformed scale. Default is \code{min(x)}.}
 \item{b}{The upper limit for density estimation,
 on the original, untransformed scale. Default is \code{max(x)}.}
 
-\item{...}{Further arguments passed on to \code{stats::density}.}
+\item{...}{Further arguments passed on to \code{\link[stats]{density}}.}
 }
 \description{
 Transform a Biased Sample to Estimate Density
+}
+\seealso{
+\code{\link{wdens}}
 }
