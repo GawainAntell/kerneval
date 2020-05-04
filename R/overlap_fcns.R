@@ -1,13 +1,15 @@
+
 #' Calculate Hellinger's distance
 #'
 #' @param d1,d2 A density distribution.
-#' @param extrap Logical. If axes limits of `d1` and `d2` differ, should
-#' they be extrapolated to match? The extended region will have density of 0.
+#' @param extrap Logical. If axes limits of \code{d1} and \code{d2} differ,
+#' should they be extrapolated to match? The density function
+#' will estimate 0 probability in the region of extrapolation.
 #' @return A numeric value between 0 and 1 inclusive.
 #' @export
 
 # Hellinger's H
-hell <- function (d1, d2, extrap=TRUE) {
+hell <- function (d1, d2, extrap = TRUE) {
   if (extrap==TRUE){
     a <- min(d1$x, d2$x)
     b <- max(d1$x, d2$x)
@@ -29,37 +31,44 @@ hell <- function (d1, d2, extrap=TRUE) {
       d2$x <- c(d2$x, b)
       d2$y <- c(d2$y, 0)
     }
+  } else {
+    if (min(d1$x) > max(d2$x) | max(d1$x) < min(d2$x)){
+      stop('no overlap in ranges over which densities are defined')
+    }
   }
 
   fun1 <- stats::approxfun(d1$x, d1$y)
   fun2 <- stats::approxfun(d2$x, d2$y)
   intgrnd <- function(x) sqrt(fun1(x) * fun2(x))
+
+  # re-define a and b after extrapolation
+  # or define in the first place if no extrapolation
   a <- max(min(d1$x), min(d2$x))
   b <- min(max(d1$x), max(d2$x))
   int <- pracma::integral(intgrnd, a, b)
   if (int > 1){
     int <- 1
-    warning('estimated Bhattacharyya distance greater than 1')
+#    warning('estimated Bhattacharyya distance greater than 1')
   }
   h <- sqrt(1 - int)
   h
 }
 
 #' Calculate Schoener's D metric of niche overlap
+#'
+#' This is a continuous version of the method introduced by Schoener 1968.
+#'
 #' @inheritParams hell
 #' @return A numeric value between 0 and 1 inclusive.
 #' @export
+#' @importFrom Rdpack reprompt
+#' @references
+#' \insertRef{Schoener68}{kerneval}
 
-# Schroener's D, continuous version
-schroenr <- function (d1, d2) {
-  if (identical(d1$x, d2$x)){
-    diff <- abs(d1$y - d2$y)
-    difFun <- stats::approxfun(d1$x, diff)
-  } else {
-    # TODO: add option here to use only the x-axis of overlap
-  #  a <- max(min(d1$x), min(d2$x))
-  #  b <- min(max(d1$x), max(d2$x))
+# Schoener's D, continuous version
+schoenr <- function (d1, d2, extrap = TRUE) {
 
+  if (extrap==TRUE){
     a <- min(d1$x, d2$x)
     b <- max(d1$x, d2$x)
 
@@ -80,18 +89,26 @@ schroenr <- function (d1, d2) {
       d2$x <- c(d2$x, b)
       d2$y <- c(d2$y, 0)
     }
-
-    fun1 <- stats::approxfun(d1$x, d1$y)
-    fun2 <- stats::approxfun(d2$x, d2$y)
-    diffFun <- function(x){
-      abs(fun1(x) - fun2(x))
+  } else {
+    if (min(d1$x) > max(d2$x) | max(d1$x) < min(d2$x)){
+      stop('no overlap in ranges over which densities are defined')
     }
   }
 
-  int <- pracma::integral(diffFun, a, b)
+  fun1 <- stats::approxfun(d1$x, d1$y)
+  fun2 <- stats::approxfun(d2$x, d2$y)
+  difFun <- function(x){
+    abs(fun1(x) - fun2(x))
+  }
+
+  # re-define a and b after extrapolation
+  # or define in the first place if no extrapolation
+  a <- max(min(d1$x), min(d2$x))
+  b <- min(max(d1$x), max(d2$x))
+  int <- pracma::integral(difFun, a, b)
   if (int > 2){
     int <- 2
-    warning('estimated integrated overlap greater than 2')
+#    warning('estimated integrated overlap greater than 2')
   }
   1 - (0.5 * int)
 }
