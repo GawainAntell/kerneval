@@ -9,8 +9,9 @@ hell(d1, d2, extrap = TRUE)
 \arguments{
 \item{d1, d2}{A density distribution.}
 
-\item{extrap}{Logical. If axes limits of `d1` and `d2` differ, should
-they be extrapolated to match? The extended region will have density of 0.}
+\item{extrap}{Logical. If axes limits of \code{d1} and \code{d2} differ,
+should they be extrapolated to match? The density function
+will estimate 0 probability in the region of extrapolation.}
 }
 \value{
 A numeric value between 0 and 1 inclusive.
