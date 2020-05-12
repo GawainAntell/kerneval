@@ -13,8 +13,14 @@ LazyData: true
 Imports:
     GoFKernel,
 	pracma,
+	Rdpack (>= 0.7),
 	stats
 Suggests:
     ecospat,
+	knitr,
+	rmarkdown,
     testthat
+RdMacros: 
+    Rdpack
 RoxygenNote: 7.1.0
+VignetteBuilder: knitr
