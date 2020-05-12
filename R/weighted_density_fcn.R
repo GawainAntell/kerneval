@@ -1,5 +1,3 @@
-# TODO edit wdens to avoid message:
-# For infinite domains Gauss integration is applied!
 
 #' Borrajo et al. 2017 bandwidth selection
 #' @param Y A numeric vector of observations.
@@ -10,7 +8,7 @@
 #' with the rule-of-thumb as the pilot.
 #' @keywords internal
 
-strappy <- function(Y, w, method='brt'){
+selectbw <- function(Y, w, method='brt'){
   if (! method %in% c('brt','rt')){
     stop('method must be brt or rt')
   }
@@ -30,11 +28,11 @@ strappy <- function(Y, w, method='brt'){
   K2u <- function(u){
     stats::dnorm(u)^2
   }
-  Rk <- pracma::integral(K2u, -Inf, Inf)
+  Rk <- pracma::quadinf(K2u, -Inf, Inf)$Q
   u2k <- function(u){
     u^2 * stats::dnorm(u)
   }
-  mu2K <- pracma::integral(u2k, -Inf, Inf)
+  mu2K <- pracma::quadinf(u2k, -Inf, Inf)$Q
   # for a Gaussian kernel, mu2k = 1
   rtNum <- Rk * mu * cHat * 8 * sqrt(pi)
   rtDenom <- n * mu2K * 3
@@ -100,7 +98,7 @@ wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
     if (! bw %in% c('brt','rt')){
       stop('bw method must be brt or rt')
     }
-    h <- strappy(x, w, method = bw)
+    h <- selectbw(x, w, method = bw)
   }
 
   if (reflect){
