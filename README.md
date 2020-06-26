@@ -2,7 +2,10 @@
 # kerneval
 
 <!-- badges: start -->
+[![Build Status](https://travis-ci.com/GwenAntell/kerneval.svg?branch=master)](https://travis-ci.com/GwenAntell/kerneval)
 <!-- badges: end -->
+
+<img src="man/figures/kerneval_hex_sticker.png" width="200px" align="right">
 
 The goal of kerneval is to estimate probability densities from data that are affected by observation bias, e.g. length bias.
 
