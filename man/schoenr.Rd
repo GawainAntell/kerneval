@@ -4,12 +4,16 @@
 \alias{schoenr}
 \title{Calculate Schoener's D metric of niche overlap}
 \usage{
-schoenr(d1, d2)
+schoenr(d1, d2, extrap = TRUE)
 }
 \arguments{
 \item{d1}{A density distribution.}
 
 \item{d2}{A density distribution.}
+
+\item{extrap}{Logical. If axes limits of \code{d1} and \code{d2} differ,
+should they be extrapolated to match? The density function
+will estimate 0 probability in the region of extrapolation.}
 }
 \value{
 A numeric value between 0 and 1 inclusive.
