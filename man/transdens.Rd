@@ -2,7 +2,7 @@
 % Please edit documentation in R/transformed_density_fcn.R
 \name{transdens}
 \alias{transdens}
-\title{Transform a Biased Sample to Estimate Density}
+\title{Transform a biased sample to estimate probability density}
 \usage{
 transdens(x, w, reflect = FALSE, a = NULL, b = NULL, ...)
 }
@@ -22,8 +22,31 @@ on the original, untransformed scale. Default is \code{max(x)}.}
 
 \item{...}{Further arguments passed on to \code{\link[stats]{density}}.}
 }
+\value{
+An S3 density.
+}
 \description{
-Transform a Biased Sample to Estimate Density
+Calculate a kernel density estimate while correcting for selection bias
+by transforming the data.
+}
+\details{
+\code{transdens} implements the strategy of Barmi and Simonoff (2000)
+to correct for selection bias in kernel density estimation. The method
+(1) transforms the empirical data based on the cumulative distribution function
+of the bias function \code{w}, (2) scales the density so it integrates to
+unity, and then (3) back-transforms the density to the original scale.
+
+Depending on the shape of the true probability distribution function and
+the bias function, analysts would be wise to inspect kernel density plots on
+the transformed scale, just as one might plot estimates (on the original
+scale) when selecting a bandwidth. In particular, one should consider whether
+the transformed distribution has a long tail or otherwise is difficult
+to estimate. If the density estimation problem seems more straightforward
+on the original scale, one could weight the kernel density estimate
+with \code{wdens()} instead of transforming the data.
+}
+\references{
+\insertRef{Barmi00}{kerneval}
 }
 \seealso{
 \code{\link{wdens}}

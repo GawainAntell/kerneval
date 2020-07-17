@@ -2,7 +2,7 @@
 % Please edit documentation in R/overlap_fcns.R
 \name{hell}
 \alias{hell}
-\title{Calculate Hellinger's distance}
+\title{Calculate Hellinger distance}
 \usage{
 hell(d1, d2, extrap = TRUE)
 }
@@ -17,5 +17,6 @@ will estimate 0 probability in the region of extrapolation.}
 A numeric value between 0 and 1 inclusive.
 }
 \description{
-Calculate Hellinger's distance
+The Hellinger distance (H) between two probability measures ranges from 0
+(identical distributions) to 1 (non-overlapping distributions).
 }

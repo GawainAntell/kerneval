@@ -2,7 +2,7 @@
 % Please edit documentation in R/weighted_density_fcn.R
 \name{wdens}
 \alias{wdens}
-\title{Weight a Biased Sample to Estimate Density}
+\title{Weight a biased sample to estimate probability density}
 \usage{
 wdens(x, w, bw = "brt", reflect = FALSE, a = NULL, b = NULL, ...)
 }
@@ -14,7 +14,8 @@ at any single value in the range of \code{x}.}
 
 \item{bw}{A method to estimate the kernel bandwidth from Borrajo et al. 2017.
 \code{rt} is the rule-of-thumb estimate; \code{brt} is a bootstrap estimate
-with the rule-of-thumb as the pilot.}
+with the rule-of-thumb as the pilot. Alternatively, a numeric value to pass
+to \code{\link[stats]{density}}.}
 
 \item{reflect}{Logical: should boundary reflection be applied?}
 
@@ -26,8 +27,34 @@ on the original, untransformed scale. Default is \code{max(x)}.}
 
 \item{...}{Further arguments passed on to \code{\link[stats]{density}}.}
 }
+\value{
+An S3 density.
+}
 \description{
-Weight a Biased Sample to Estimate Density
+Calculate a kernel density estimate while correcting for selection bias
+by weighting the kernels.
+}
+\details{
+The kernel on each datum is weighted by the inverse of the observation
+probability at that point, \code{1/w(X)}. Weighted kernel estimation should
+not be confused with adaptive kenel estimation. Both approaches
+modify the individual kernels that contribute to an estimate.
+However, in adaptive KDE the badwidth of each kernel is adjusted,
+whereas in weighted KDE the bandwidth is constant while the height
+(total probability density) of each kernel is adjusted.
+
+Weighted KDE is the method data that has received the most attention
+in the statistics literature for selection-biased data, beginning with
+the foundational paper of Jones (1991). The method is a slight modification
+of classical KDE and does not add onerous calculation, making it attractive.
+However, the choice of bandwidth is complicated. \code{wdens} calls the
+internal \code{selectbw} function to select a bandwidth following the
+user-specified bootstrap methods of Borrajo and others (2017).
+}
+\references{
+\insertRef{Jones91}{kerneval}
+
+\insertRef{Borrajo17}{kerneval}
 }
 \seealso{
 \code{\link{transdens}}

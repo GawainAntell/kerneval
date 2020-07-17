@@ -19,7 +19,17 @@ will estimate 0 probability in the region of extrapolation.}
 A numeric value between 0 and 1 inclusive.
 }
 \description{
-This is a continuous version of the method introduced by Schoener 1968.
+Schoener's D metric quantifies niche overlap between two discretised
+probability functions. The \code{schoenr} function modifies the metric for
+continuous probability distributions.
+}
+\details{
+D was originally defned as the sum of the absolute difference in resource use
+frequencies for every category i. The sum is rescaled by 0.5 to give the
+per-niche value, and then subtracted from 1 so as to be a similarity metric
+(i.e. D = 1 indicates identical niches). \code{schoenr} replaces the sum
+with an integral on the absolute difference between two estimated
+kernel density functions.
 }
 \references{
 \insertRef{Schoener68}{kerneval}
