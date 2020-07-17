@@ -68,18 +68,41 @@ selectbw <- function(Y, w, method='brt'){
   }
 }
 
-#' Weight a Biased Sample to Estimate Density
+#' Weight a biased sample to estimate probability density
+#'
+#' Calculate a kernel density estimate while correcting for selection bias
+#' by weighting the kernels.
+#'
+#' The kernel on each datum is weighted by the inverse of the observation
+#' probability at that point, \code{1/w(X)}. Weighted kernel estimation should
+#' not be confused with adaptive kenel estimation. Both approaches
+#' modify the individual kernels that contribute to an estimate.
+#' However, in adaptive KDE the badwidth of each kernel is adjusted,
+#' whereas in weighted KDE the bandwidth is constant while the height
+#' (total probability density) of each kernel is adjusted.
+#'
+#' Weighted KDE is the method data that has received the most attention
+#' in the statistics literature for selection-biased data, beginning with
+#' the foundational paper of Jones (1991). The method is a slight modification
+#' of classical KDE and does not add onerous calculation, making it attractive.
+#' However, the choice of bandwidth is complicated. \code{wdens} calls the
+#' internal \code{selectbw} function to select a bandwidth following the
+#' user-specified bootstrap methods of Borrajo and others (2017).
 #'
 #' @seealso \code{\link{transdens}}
 #'
 #' @inheritParams transdens
 #' @param bw A method to estimate the kernel bandwidth from Borrajo et al. 2017.
 #' \code{rt} is the rule-of-thumb estimate; \code{brt} is a bootstrap estimate
-#' with the rule-of-thumb as the pilot.
+#' with the rule-of-thumb as the pilot. Alternatively, a numeric value to pass
+#' to \code{\link[stats]{density}}.
+#' @return An S3 density.
 #' @export
+#' @references
+#' \insertRef{Jones91}{kerneval}
+#'
+#' \insertRef{Borrajo17}{kerneval}
 
-# weighted kernel density estimation after Jones 1991
-# bw argument can be rt, brt, or a numeric width to use
 wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
   wts <- 1/w(x)
   wts <- wts/sum(wts)
