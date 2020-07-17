@@ -71,8 +71,8 @@ transdens <- function(x, w, reflect = FALSE, a = NULL, b = NULL, ...){
   kde$x <- sapply(kde$x, inv)
 
   # scale to integrate to one (i.e. multiply by mu-hat)
-  kdeFun <- approxfun(kde$x, kde$y)
-  muHat <- 1/integral(kdeFun, min(kde$x), max(kde$x))
+  kdeFun <- stats::approxfun(kde$x, kde$y)
+  muHat <- 1/pracma::integral(kdeFun, min(kde$x), max(kde$x))
   kde$y <- muHat * kde$y
 
   return(kde)
