@@ -1,12 +1,11 @@
 Package: kerneval
 Type: Package
-Title: Kernel Density Estimation With Sampling-biased Data 
+Title: Kernel density estimation with selection-biased data 
 Version: 0.1.0.9000
 Authors@R: person('Gwen', 'Antell', email='gwen.antell@earth.ox.ac.uk', 
                   role=c('aut','cre'))
 Depends: R (>= 4.0)
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: The kerneval package implements tools for estimating and comparing probability density functions based on data that are biased by sampling (e.g. length-biased data). The statistical approaches could be used in many disciplines, although the package documentation focuses especially on applications to ecological analysis.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -16,7 +15,6 @@ Imports:
 	Rdpack (>= 0.7),
 	stats
 Suggests:
-    ecospat,
 	knitr,
 	rmarkdown,
     testthat
