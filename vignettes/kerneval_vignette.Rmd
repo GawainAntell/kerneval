@@ -75,17 +75,17 @@ Many statisticans attribute the first treatment of the length-bias problem to Co
 
 # Transformed density estimation
 
-Barmi and Simonoff [-@Barmi00] proposed an elegant strategy to estimate density functions from selection-biased samples. The premise is that one may transform the empirical sample to an unbiased scale, perform any type of established density estimation, and then back-transform to the original scale to interpret the estimate. This approach has been described as 'adjust-first, smooth-later' because there is no need to modify the density estimation step. For instance, one could perform KDE with a Gaussian kernel and rule-of-thumb bandwidth, so long as KDE is done in the transformed space. The alternative approach involves weighting the kernels (described below) to adjust the estimation during the smoothing step.
-
-Depending on the shape of the true PDF and the bias function, analysts would be wise to inspect kernel density plots on the transformed scale, just as one might plot estimates (on the original scale) when selecting a bandwidth. In particular, one should consider whether the transformed distribution has a long tail or otherwise is difficult to estimate. If the density estimation problem seems more straightforward on the original scale, one could weight the KDE instead of transforming the data. Example 1 below illustrates these trade-offs.
+Barmi and Simonoff [-@Barmi00] proposed an elegant strategy to estimate density functions from selection-biased samples. The premise is that one may transform the empirical sample to an unbiased scale, perform any type of established density estimation, and then back-transform to the original scale to interpret the estimate. This approach has been described as 'adjust-first, smooth-later' because there is no need to modify the density estimation step. For instance, one could perform KDE with a Gaussian kernel and rule-of-thumb bandwidth, so long as KDE is done in the transformed space. The alternative approach involves weighting the kernels (described below) to adjust the estimation concurrent with smoothing.
 
 Continuing with the mathematical notation of Eq. 1, let $X_1, X_2, ..., X_n$ be a random sample of $n$ observations from $G$. To transform these empirical data, calculate the cumulative distribution function of the bias function, $W(x) = \int_0^x w(u)du$. Define $Y_i = W(X_i)$ for $i = 1, 2, ..., n$. To estimate the true probability distribution function $f$, 
 
 1. Perform density estimation on the sample $Y_1, Y_2, ..., Y_n$
-2. Scale by $\hat{\mu}$ so the function integrates to unity
-3. Back-transform from $y$ to $x$, using $W^{-1}(y)$
+2. Back-transform from $y$ to $x$, using $W^{-1}(y)$
+3. Scale by a constant ($\hat{\mu}$) such that the function integrates to unity
 
 The `transdens()` function evaluates these steps, calling the `inverse()` function from **GoFKernel** [@Pavia15] to estimate the inverse cumulative distribution function.
+
+Depending on the shape of the true PDF and the bias function, analysts would be wise to inspect kernel density plots on the transformed scale, just as one might plot estimates (on the original scale) when selecting a bandwidth. In particular, one should consider whether the transformed distribution has a long tail or otherwise is difficult to estimate. If the density estimation problem seems more straightforward on the original than transformed scale, one could weight the KDE instead of transforming the data. Example 1 below illustrates these trade-offs. As another alternative, the original authors of the transformation method also suggest a local quadratic likelihood density estimator for distributions where the tails may be difficult to estimate. Kernels and local likelihood estimators can each vastly outperform the other in different contexts [@Hall02]. **kerneval** implements only KDE methods, but includes the option for boundary reflection (`reflect = TRUE`) to mitigate edge effects.
 
 # Weighted density estimation
 
@@ -140,7 +140,7 @@ The original study replicated each scenario with 500 samples. Depending on proce
 nreps <- 25 # 500
 ```
 
-To compare the performance of weighted vs. transformed KDE in each scenario, the standard approach is to calculate the mean integrated squared error, MISE. First, draw a sample of $n$ observations from a chi-square distribution with given degrees of freedom. Then, calculate $\hat f$ with each KDE method. Finally, integrate the squared difference between the estimated and true PDF over the study integral. The ultimate goal is to calculate the expectation of this integrated error, however, so it is helpful to wrap all of these steps into a function that can be iterated. The mean ISE will converge on the MISE with more replicates.
+To compare the performance of weighted vs. transformed KDE in each scenario, the standard approach is to calculate the mean integrated squared error, MISE. First, draw a sample of $n$ observations from a chi-square distribution with given degrees of freedom. Then, calculate $\hat f$ with each KDE method. Finally, integrate the squared difference between the estimated and true PDF over the study integral. The ultimate goal is to calculate the *expectation* of this integrated error, however, so it is helpful to wrap all of these steps into a function that can be iterated. The mean ISE will converge on the MISE with more replicates.
 ```{r}
 miser1 <- function(w, n, k, deg){
   df <- deg(k)
@@ -185,8 +185,7 @@ There are many ways one could iterate through each sample and simulated distribu
 # }
 ```
 
-The average ISE values from 500 replicates (i.e.  estimates of MISE) are listed in Table 1, and agree with the original trends reported by Barmi and Simonoff [-@Barmi00], reproduced in Table 2. Namely, KDE is more accurate when applied to more symmetric distributions (chi-square distributions with 12 or 16 degrees of freedom instead of 2 or 3). In addition, the transformation approach performs better for inverse-length-biased data than for length-biased data, because the transformed axis in the former case (a log-x scale) is a 'generally favourable' estimation problem.
-
+The average ISE values from 500 replicates (i.e. estimates of MISE) are listed in Table 1, and agree with the original trends reported by Barmi and Simonoff [-@Barmi00], reproduced in Table 2. Namely, KDE is more accurate when applied to more symmetric distributions (chi-square distributions with 12 or 16 degrees of freedom instead of 2 or 3). In addition, the transformation approach performs better for inverse-length-biased data than for length-biased data, because the transformed axis in the former case (a log-x scale) is a 'generally favourable' estimation problem.
 ```{r, echo = FALSE}
 opts <- options(knitr.kable.NA = '')
 
@@ -201,7 +200,8 @@ opts <- options(knitr.kable.NA = '')
 # write.csv(curTbl, 'vignettes/replicated-table-1.csv', row.names = FALSE)
 curTbl <- read.csv('replicated-table-1.csv')
 knitr::kable(curTbl, digits = 4, align = 'rrrr',
-             caption = 'Replication of published results')
+             caption = 'Replication of published results, 
+             using wdens() and transdens() functions in kerneval')
 
 # plot the original (published) table
 tbl <- read.csv('Barmi-Simonoff-2000_table-1.csv')
@@ -210,13 +210,14 @@ tbl$Weighted <- as.character(tbl$Weighted)
 tbl$Transformed <- as.character(tbl$Transformed)
 
 knitr::kable(tbl, align = 'rrll',
-             caption = 'Barmi and Simonoff (2000) table 1')
+             caption = 'Barmi and Simonoff (2000) Table 1,
+             using weighted KDE and transformed local likelihood estimators')
 
 # restore global R options
 options(opts)
 ```
 
-Although the patterns in Tables 1 and 2 match, the exact values of respective entries differ. At the second and third significant digits, some variation seems to occur due to stochasticity in the replicates. Perhaps 1000 replicates would be more suitable to approximate the MISE. The larger descrepancies might be due to differences in bandwidth selection method. The authors chose the bandwidth 'in each replication to minimise ISE,' but this leaves some ambiguity. In the code above, the default methods of bandwidth selection are applied: the 'nrd0' rule-of-thumb for the transformation approach, and the bootstrap estimate with the rule-of-thumb as pilot for the weighted approach.
+Although the patterns in Tables 1 and 2 match, the exact values of respective entries differ. At the second and third significant digits, some variation seems to occur due to stochasticity in the replicates. Perhaps 1000 replicates would be more suitable to approximate the MISE. Additional discrepancies for weighted kernel MISE might be due to differences in bandwidth selection method. The authors chose the bandwidth 'in each replication to minimise ISE,' but this leaves some ambiguity. In the code above, bandwidth was selected with a bootstrap estimate and rule-of-thumb pilot. For the transformed estimates, the authors used a local quadratic likelihood density estimator, while here transformed kernels are used instead.
 
 ## 2. Polynomial bias function
 
@@ -267,7 +268,7 @@ miser2 <- function(g, n){
 # round( rowMeans(iseSmolN), 4)
 
 # weighted, transformed, biased
-#> [1] 0.0100 0.0045 0.0144
+#> [1] 0.0082 0.0059 0.0169
 ```
 
 If one repeats this exercise with $n=500$, both the weighted and transformed estimates improve several times over, but the uncorrected estimate does not.
@@ -338,7 +339,7 @@ Although MISE is a useful metric, as a single number it cannot indicate the mann
 
 ![The true PDF is a chi-square distribution with 5 degrees of freedom is and is plotted in black. The distribution from which observations are drawn is in grey and reflects the influence of selection bias. A random sample of 50 observations from the grey PDF is plotted as a rug at bottom. The kernel density estimates based on the sample are drawn in colour: the blue curve is a standard KDE, the orange curve is a weighted KDE, and the red curve is a transformed KDE.](KDE_example_chisq5_50obs.png)
 
-![The PDF colours are as in Figure 1. The sample size in this case is 200 observations instead of 50.](KDE_example_chisq5_500obs.png)
+![The PDF colours are as in Figure 1. The sample size in this case is 500 observations instead of 50.](KDE_example_chisq5_500obs.png)
 
 \newpage
 
