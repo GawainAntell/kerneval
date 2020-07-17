@@ -1,5 +1,7 @@
 ---
-title: "Introduction to the **kerneval** package for density estimation"
+title: |
+  Introduction to the 'kerneval' package for density estimation 
+  ![](kerneval_hex_sticker.png){width=1.75in}
 author: "Gwen S Antell"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -22,15 +24,38 @@ knitr::opts_chunk$set(
 )
 ```
 
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+# Contents
+
+1. Overview
+    - Why use kernels?
+    - How does it work?
+    - When should one use **kerneval**?
+2. Mathematical framework
+3. Transformed density estimation
+4. Weighted density estimation
+    - Bootstrap bandwidth selection
+5. Examples
+    - Length bias and inverse length bias
+    - Polynomial bias function
+6. References
+
+\newpage
+
 # Overview
 
 ## Why use kernels?
-Kernel density estimation (KDE) is a foundational method in nonparametric statistics. Practical applications abound, from ecology to engineering. There are also theoretical applications of kernels to other statistical methods, such as spline smoothing and machine learning. KDE has achieved its prominence because the basic method is a straightforward, elegant, and effective way to generate a smooth probability distribution function (PDF) from a finite vector of numeric observations. Many R users will be familiar already with kernel-smoothed data visualisations, such as *geom_density()* in **ggplot2**.
+Kernel density estimation (KDE) is a foundational method in nonparametric statistics. Practical applications abound, from ecology to engineering. There are also theoretical applications of kernels to other statistical methods, such as spline smoothing and machine learning. KDE has achieved its prominence because the basic method is a straightforward, elegant, and effective way to generate a smooth probability distribution function (PDF) from a finite vector of numeric observations. Many R users will be familiar already with kernel-smoothed data visualisations, such as `ggplot2::geom_density()`.
 
 ## How does it work?
-One can find a brief summary of KDE in nearly any basic statistics textbook (e.g. @Wasserman06). Silverman [-@Silverman86] gives a more thorough introduction to the topic and is written so as to be accessible to readers at a range of experience levels. Many explanations start with histograms, which are a simple variation on KDE wherein the observations are binned. Graphically, the probability function can be visualised by stacking a rectangle in the bin corresponding to each observation. The width of the rectangle along the x-axis is the 'bandwidth' in KDE terminology. The height is scaled such that the probability sums to unity across a given interval. One need not bin the data, however; one could instead place a rectangle directly at the x-value of each observation. The result is a step-wise function (the summed height of all rectangles at any given x-value) that is more jagged than a regular histogram and is called a naive estimator. One step further, one could replace rectangles with Gaussian curves (or triangles, or other kernel distributions). This is implemented in the *density()* function from the base **stats** package. There are more than 100 other packages that also involve KDE. For a comparison of the functionality and performance of 15 major KDE packages, a starting place is Deng and Wickham's [-@Deng11] review.
+One can find a brief summary of KDE in nearly any basic statistics textbook (e.g. @Wasserman06). Silverman [-@Silverman86] gives a more thorough introduction to the topic and is written so as to be accessible to readers at a range of experience levels. Many explanations start with histograms, which are a simple variation on KDE wherein the observations are binned. Graphically, the probability function can be visualised by stacking a rectangle in the bin corresponding to each observation. The width of the rectangle along the x-axis is the 'bandwidth' in KDE terminology. The height is scaled such that the probability sums to unity across a given interval. One need not bin the data, however; one could instead place a rectangle directly at the x-value of each observation. The result is a step-wise function (the summed height of all rectangles at any given x-value) that is more jagged than a regular histogram and is called a naive estimator. One step further, one could replace rectangles with Gaussian curves (or triangles, or other kernel distributions). This is implemented in the `density()` function from the base **stats** package. There are more than 100 other packages that also involve KDE. For a comparison of the functionality and performance of 15 major KDE packages, a starting place is Deng and Wickham's [-@Deng11] review.
 
-## When should one use *kerneval*?
+## When should one use **kerneval**?
 Most density estimation methods assume that the probability of observing an event (independent of the probability of the event occurring) is constant across the interval of estimation. However, many empirical datasets violate this assumption. For instance, in some cases the observation rate increases linearly as a function of $x$, so-called length-bias or size-bias.
 
 **kerneval** implements methods to account for observation bias (also called selection bias) when estimating probability densities. One can use length-biased data or data with more complicated bias functions defined for any $x$ in the study interval. The estimation steps will not eliminate bias, but they will reduce it, and the error of the estimate will decrease with sample size--as is the case for most statistical methods for biased data.
@@ -60,7 +85,7 @@ Continuing with the mathematical notation of Eq. 1, let $X_1, X_2, ..., X_n$ be 
 2. Scale by $\hat{\mu}$ so the function integrates to unity
 3. Back-transform from $y$ to $x$, using $W^{-1}(y)$
 
-These *transdens()* function evaluates these steps, calling the *inverse()* function from **GoFKernel** to estimate the inverse cumulative distribution function.
+The `transdens()` function evaluates these steps, calling the `inverse()` function from **GoFKernel** [@Pavia15] to estimate the inverse cumulative distribution function.
 
 # Weighted density estimation
 
@@ -76,7 +101,7 @@ Weighted kernel estimation should not be confused with adaptive kenel estimation
 
 ## Bootstrap bandwidth selection
 
-The theory behind bandwidth selection can be summarised as a series of 3, potentially iterative steps. Luckily, in practice, there is a computational shortcut to find the bandwidth $h^*$ that minimises bootstrapped mean integrated squared error (BMISE). (Section 'Technical details' below provides basic background on MISE as a goodness-of-fit measure.)
+The theory behind bandwidth selection can be summarised as a series of 3, potentially iterative steps. Luckily, in practice, there is a computational shortcut to find the bandwidth $h^*$ that minimises bootstrapped mean integrated squared error (BMISE). 
 
 1. Pick an initial ('pilot') bandwidth $\lambda$ and kernel $L$. Smooth the empirical distribution $F_n$ with these parameters to get $\hat f_\lambda$. Bose and Dutta [-@Bose13] recommended the use of a Gaussian kernel with $\lambda = \frac{1}{8}n^{-1/9}$.
 2. Resample $n$ observation from $\hat f_\lambda$, for $B$ replicates. This is equivalent to resampled with replacement from $F_n$, then adding $\epsilon$ to each resampled set of observations, $X^*$. The $\epsilon$ are i.i.d. from $\frac {K(\cdot/\lambda)}{\lambda}$. (This step is not run in practice.)
@@ -85,7 +110,7 @@ $BMISE(h, \lambda) = \frac 1 B \sum_{i=1}^{B} \int [f^*_{h,i}(x) - \hat f_{\lamb
 
 The variance and bias terms of BMISE can be expressed in terms of $K_h$ and $K_{\lambda}$ convolution, which do not depend on $X^*$. Therefore, it is possible to find the $h^*$ that minimises BMISE without actually drawing bootstrap samples. One must still pick a pilot bandwidth, however.
 
-The internal *selectbw()* function selects the bandwidth following the bootstrap method of Borrajo and others [-@Borrajo17].
+The internal `selectbw()` function selects the bandwidth following the bootstrap method of Borrajo and others [-@Borrajo17].
 
 # Examples
 
@@ -115,7 +140,7 @@ The original study replicated each scenario with 500 samples. Depending on proce
 nreps <- 25 # 500
 ```
 
-To compare the performance of weighted vs. transformed KDE in each scenario, the standard approach is to calculate the mean integrated squared error, MISE (discussed in the 'Technical details' section below.) First, draw a sample of $n$ observations from a chi-square distribution with given degrees of freedom. Then, calculate $\hat f$ with each KDE method. Finally, integrate the squared difference between the estimated and true PDF over the study integral. The ultimate goal is to calculate the expectation of this integrated error, however, so it is helpful to wrap all of these steps into a function that can be iterated. The mean ISE will converge on the MISE with more replicates.
+To compare the performance of weighted vs. transformed KDE in each scenario, the standard approach is to calculate the mean integrated squared error, MISE. First, draw a sample of $n$ observations from a chi-square distribution with given degrees of freedom. Then, calculate $\hat f$ with each KDE method. Finally, integrate the squared difference between the estimated and true PDF over the study integral. The ultimate goal is to calculate the expectation of this integrated error, however, so it is helpful to wrap all of these steps into a function that can be iterated. The mean ISE will converge on the MISE with more replicates.
 ```{r}
 miser1 <- function(w, n, k, deg){
   df <- deg(k)
@@ -162,8 +187,6 @@ There are many ways one could iterate through each sample and simulated distribu
 
 The average ISE values from 500 replicates (i.e.  estimates of MISE) are listed in Table 1, and agree with the original trends reported by Barmi and Simonoff [-@Barmi00], reproduced in Table 2. Namely, KDE is more accurate when applied to more symmetric distributions (chi-square distributions with 12 or 16 degrees of freedom instead of 2 or 3). In addition, the transformation approach performs better for inverse-length-biased data than for length-biased data, because the transformed axis in the former case (a log-x scale) is a 'generally favourable' estimation problem.
 
-Although the patterns in Tables 1 and 2 match, the exact values of respective entries differ. At the second and third significant digits, some variation seems to occur due to stochasticity in the replicates. Perhaps 1000 replicates would be more suitable to approximate the MISE. The larger descrepancies might be due to differences in bandwidth selection method. The authors chose the bandwidth 'in each replication to minimise ISE,' but this leaves some ambiguity. In the code above, the default methods of bandwidth selection are applied: the 'nrd0' rule-of-thumb for the transformation approach, and the bootstrap estimate with the rule-of-thumb as pilot for the weighted approach.
-
 ```{r, echo = FALSE}
 opts <- options(knitr.kable.NA = '')
 
@@ -193,6 +216,7 @@ knitr::kable(tbl, align = 'rrll',
 options(opts)
 ```
 
+Although the patterns in Tables 1 and 2 match, the exact values of respective entries differ. At the second and third significant digits, some variation seems to occur due to stochasticity in the replicates. Perhaps 1000 replicates would be more suitable to approximate the MISE. The larger descrepancies might be due to differences in bandwidth selection method. The authors chose the bandwidth 'in each replication to minimise ISE,' but this leaves some ambiguity. In the code above, the default methods of bandwidth selection are applied: the 'nrd0' rule-of-thumb for the transformation approach, and the bootstrap estimate with the rule-of-thumb as pilot for the weighted approach.
 
 ## 2. Polynomial bias function
 
@@ -255,7 +279,7 @@ If one repeats this exercise with $n=500$, both the weighted and transformed est
 #> [1] 0.0029 0.0018 0.0127
 ```
 
-Although MISE is a useful metric, as a single number it cannot indicate the manner in which the estimate errs along the study interval. A graphical approach provides this complementary information. The true PDF is plotted in black; the distribution from which observations are drawn is in grey. The uncorrected estimate (in blue) follows the grey curve. The orange (weighted) and transformed (red) estimates approach the true density as sample size increases from 50 to 500 observations. The weighted estimate undersmoothes at both sample sizes, however.
+Although MISE is a useful metric, as a single number it cannot indicate the manner in which the estimate errs along the study interval. A graphical approach provides this complementary information, as demonstrated in Figures 1 and 2. The weighted (in orange) and transformed (in red) kernel estimates approach the true density as sample size increases from 50 to 500 observations. The weighted estimate undersmoothes at both sample sizes, however. The uncorrected estimate (in blue) follows the selection-biased PDF (in grey) regardless of sample size.
 ```{r, echo = FALSE}
 # library(ggplot2)
 # 
@@ -305,53 +329,17 @@ Although MISE is a useful metric, as a single number it cannot indicate the mann
 #   
 #   polyBiasP
 #   
-#   polyNm <- paste0('vignettes/KDE_example_chisq5_',n,'obs.pdf')
-#   pdf(polyNm, width=6, height=4)
-#   print(polyBiasP)
-#   dev.off()
+#  polyNm <- paste0('KDE_example_chisq5_',n,'obs.png')
+#  png(polyNm, width=6, height=3.75, units = 'in', res = 300)
+#  print(polyBiasP)
+#  dev.off()
 # }
 ```
 
-![alt text here](KDE_example_chisq5_50obs.png)
-![alt text here](KDE_example_chisq5_500obs.png)
+![The true PDF is a chi-square distribution with 5 degrees of freedom is and is plotted in black. The distribution from which observations are drawn is in grey and reflects the influence of selection bias. A random sample of 50 observations from the grey PDF is plotted as a rug at bottom. The kernel density estimates based on the sample are drawn in colour: the blue curve is a standard KDE, the orange curve is a weighted KDE, and the red curve is a transformed KDE.](KDE_example_chisq5_50obs.png)
 
-# Technical details
+![The PDF colours are as in Figure 1. The sample size in this case is 200 observations instead of 50.](KDE_example_chisq5_500obs.png)
 
-## Boundary reflection
-
-The default 'cutoff' argument in *stats::density()* leads to a distribution that generally does not fall to zero exactly at the upper bound, but rather tapers towards zero at a point three times the bandwidth farther away. However, for some density estimation problems it may be desirable to reflect data across the estimation bounds so that the density does not drop towards zero as it approaches those bounds. In particular, if the range of sampled values is much narrower than the suspected true breadth of the distribution, then boundary reflection could improve KDE accuracy greatly. **kerneval** allows boundary reflection with the argument `reflect=TRUE` and specified bounds `a` and `b`. The *wdens()* and *transdens()* functions will internally call *density.reflected()* in **GoFKernel**.
-
-## Mean integrated squared error
-
-The most common way to define the fitting error of an estimated density function is mean squared error, MSE. MSE is defined at a single point, while the error accumulated over the entire study interval is the mean integrated squared error, MISE. Most bandwidth selection methods attempt to estimate and then minimise the MISE as a function of the bandwidth, $h$. MISE can be written as the sum of systematic error (bias) and variance, and so the chosen bandwidth is a trade-off between these two terms. A large $h$ will reduce variance but increase bias, and a small $h$ will increase variance but reduce bias. This is a more formal description of the intuitive idea that an overly-narrow bandwidth will undersmooth the data, and an overly-broad bandwidth will oversmooth. The following section is based on notes from @Silverman86 and summarises the mathematical explanation of the variance-bandwidth trade-off and the criteria for an optimal bandwidth.
-
-The sum of the squared bias and variance at point $x$ is:
-$$ MSE_{x}(\hat{f}) = E\{\hat{f}(x) - f(x)\}^2 $$
-$$ = \{E\hat{f}(x) - f(x)\}^2 + var \hat{f}(x) $$
-For a global estimate, the mean integrated squared error is defined as
-$$ MISE(\hat{f}) = E \int\{\hat{f}(x) - f(x) \}^2dx $$
-$$ = \int MSE_{x}(\hat{f})dx \nonumber $$
-$$ = \int \{E\hat{f}(x) - f(x)\}^2dx + \int var\hat{f}(x)dx $$
-
-Exploring the bias term individually,
-$$bias_{h}(x) = E\hat{f}(x) - f(x) = \int \frac{1}{h} K\big( \frac{x-y}{h}\big)f(y)dy - f(x)$$
-With some assumptions about the kernel function $K$,
-$$bias_{h}(x) = \frac{1}{2}h^2f''(x)k_2 + \text{ higher-order terms in } h $$
-Therefore,
-$$\int bias_{h}(x)^2dx \approx \frac{1}{4}h^4k_2\int f''(x)^2dx$$
-where $k_2$ is a constant, for instance the variance of a Gaussian distribution $K$.
-
-After some mathematical acrobatics, one can also derive an approximation of the variance term:
-$$var \hat{f}(x) \approx \frac{1}{nh}f(x) \int K(t)^2dt \nonumber $$
-$$\int var\hat{f}(x)dx \approx \frac{1}{nh} \int K(t)^2dt$$
-
-Combining the above expressions for MISE, bias, and variance, we have:
-$$MISE \approx \frac{1}{4}h^4k_2\int f''(x)^2dx + \frac{1}{nh} \int K(t)^2dt$$
-
-Note that the variance term depends on sample size $n$, while the bias term depends on the second derivative of the PDF. The bandwidth $h$ affects both the variance and the bias. The value of $h$ that minimises MISE is:
-
-$$h_{opt} = k_2^{-2/5}\bigg\{\int K(t)^2dt\bigg\}^{1/5}\bigg\{\int f''(x)^2dx \bigg\}^{-1/5}n^{-1/5}$$
-
-From inspection of this last result, we can tell that, unfortunately, $h_{opt}$ depends on the (unknown) true density distribution $f$. Also, $h_{opt} \to 0$ as $n \to \infty$, but slowly. Lastly, smaller values of $h$ are better for rougher (more 'wiggly') $f$. Roughness is indicated by the expression $\int f''^2$.
+\newpage
 
 # References
