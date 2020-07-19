@@ -1,49 +1,59 @@
 context('Density output')
 library(kerneval)
 
-# nVals <- c(50, 200)
-# kVals <- c(2, 12)
-# kVals2 <- c(3, 16)
-n <- 100
-k <- 12
-k2 <- 16
-
 w <- function(x){ x }
-x <- rchisq(n = n, df = (k + 2))
+x <- rchisq(n = 100, df = 14)
 je <- wdens(x, w)
 te <- transdens(x, w)
-h <- wdens(x, w, give.Rkern=TRUE)
 
-# w2 <- function(x){ 1 / x }
-# x2 <- rchisq(n = n, df = (k2 - 2))
-# je2 <- wdens(x2, w2)
-# te2 <- transdens(x2, w2)
+xnorm <- stats::rnorm(100, sd = 10)
+kdeNorm <- stats::density(xnorm)
+kdeScl <- dscaler(kdeNorm, a = -10, b = 10)
 
 # tests -------------------------------------------------------------------
 
 test_that('output is S3 density',{
-  expect_is(je, 'density')
-  expect_is(te, 'density')
+  expect_s3_class(je, 'density')
+  expect_s3_class(te, 'density')
 })
-# might need to import the generic for S3 methods and export the S3 constructor
 
-test_that('wdens can return bandwidth value', {
-  expect_is(h, 'numeric')
+test_that('cropped density endpoints are correct and unique', {
+  xTrunc <- kdeScl$x
+  lengthAll <- length(xTrunc)
+  lengthUniq <- length(unique(xTrunc))
+  expect_identical(lengthAll, lengthUniq)
+  expect_identical(min(xTrunc), -10)
+  expect_identical(max(xTrunc),  10)
 })
 
 test_that('density estimate integrates to unity', {
   fWeight <- stats::approxfun(je$x, je$y)
   fTrans  <- stats::approxfun(te$x, te$y)
-  intWeight <- integrate(fWeight, min(je$x), max(je$x))
-  intTrans  <- integrate(fTrans, min(te$x), max(te$x))
+  fNorm <-   stats::approxfun(kdeScl$x, kdeScl$y)
+  intWeight <- stats::integrate(fWeight, min(je$x), max(je$x))
+  intTrans  <- stats::integrate(fTrans,  min(te$x), max(te$x))
+  intNorm   <- stats::integrate(fNorm, -10, 10)
   expect_equal(intWeight$value, 1, tolerance = 0.1)
   expect_equal(intTrans$value,  1, tolerance = 0.1)
+  expect_equal(intNorm$value,   1, tolerance = 0.1)
 })
 
-# TODO investigate:
+test_that('dscaler throws errors with improper bounds', {
+  expect_error(
+    dscaler(kdeNorm, a = -100, b = 100),
+    'limits outside the range of available data'
+  )
+  expect_error(
+    dscaler(kdeNorm, a = 10, b = -10),
+    'upper limit must be greater than lower limit'
+  )
+})
 
-# if w(x) is undefined at 0, then min and max of X can be off
-# (albeit only slightly) from values at which kernel can estimate
+test_that('wdens additional arguments work', {
+  h <- wdens(x, w, give.Rkern=TRUE)
+  expect_is(h, 'numeric')
 
-# need to tweak to uniroot function within inverse
-# for badly behaved empirical data?
+  expect_error(
+    wdens(x, w, kernel = 'epanechnikov')
+  )
+})
