@@ -330,7 +330,7 @@ Although MISE is a useful metric, as a single number it cannot indicate the mann
 #   
 #   polyBiasP
 #   
-#  polyNm <- paste0('KDE_example_chisq5_',n,'obs.png')
+#  polyNm <- paste0('vignettes/KDE_example_chisq5_',n,'obs.png')
 #  png(polyNm, width=6, height=3.75, units = 'in', res = 300)
 #  print(polyBiasP)
 #  dev.off()
