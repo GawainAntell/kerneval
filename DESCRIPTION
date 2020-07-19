@@ -1,7 +1,7 @@
 Package: kerneval
 Type: Package
 Title: Kernel density estimation with selection-biased data 
-Version: 0.1.0.9000
+Version: 0.1.1.9000
 Authors@R: person('Gwen', 'Antell', email='gwen.antell@earth.ox.ac.uk', 
                   role=c('aut','cre'))
 Depends: R (>= 4.0)
@@ -12,7 +12,7 @@ LazyData: true
 Imports:
     GoFKernel,
 	pracma,
-	Rdpack (>= 0.7),
+	Rdpack (>= 1.0),
 	stats
 Suggests:
 	knitr,
@@ -20,5 +20,5 @@ Suggests:
     testthat
 RdMacros: 
     Rdpack
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
