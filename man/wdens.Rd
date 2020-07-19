@@ -50,11 +50,14 @@ of classical KDE and does not add onerous calculation, making it attractive.
 However, the choice of bandwidth is complicated. \code{wdens} calls the
 internal \code{selectbw} function to select a bandwidth following the
 user-specified bootstrap methods of Borrajo and others (2017).
+The bandwidth will be calculated for a Gaussian kernel, so \code{wdens}
+will not accept the additional arguments \code{kernel}, \code{window}, or
+\code{width}. Other arguments will be passed to \code{\link[stats]{density}}.
 }
 \references{
-\insertRef{Jones91}{kerneval}
-
 \insertRef{Borrajo17}{kerneval}
+
+\insertRef{Jones91}{kerneval}
 }
 \seealso{
 \code{\link{transdens}}

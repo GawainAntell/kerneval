@@ -23,7 +23,8 @@ on the original, untransformed scale. Default is \code{max(x)}.}
 \item{...}{Further arguments passed on to \code{\link[stats]{density}}.}
 }
 \value{
-An S3 density.
+An S3 density, with the additional attribute \code{$xTrans},
+which is the location of \code{$x} values along the transformed axis.
 }
 \description{
 Calculate a kernel density estimate while correcting for selection bias
