@@ -4,13 +4,18 @@
 #' @param pdf A univariate probability density distribution.
 #' @param a,b The new lower and upper limits of the distribution.
 #' The density will be rescaled such that the integral over the
-#' interval `[a,b]` sums to unity.
+#' interval \eqn{[a,b]} sums to unity.
 #' @return An S3 density object.
+#' @keywords internal
+#' @importFrom Rdpack reprompt
 
 dscaler <- function(pdf, a, b){
   x <- pdf$x
   if (a < min(x) | b > max(x)){
     stop('limits outside the range of available data')
+  }
+  if (a >= b){
+    stop('upper limit must be greater than lower limit')
   }
   fhat <- stats::approxfun(pdf$x, pdf$y)
 
@@ -44,23 +49,29 @@ dscaler <- function(pdf, a, b){
 #' The Hellinger distance (H) between two probability measures ranges from 0
 #' (identical distributions) to 1 (non-overlapping distributions).
 #'
-#' Let `f(x)` and `g(x)` be the probability density functions for comparison.
+#' Let f(x) and g(x) be the probability density functions for comparison.
 #' The squared Hellinger distance is
-#' \eqn{0.5 \int(\sqrt f(x) - \sqrt g(x) ^2) dx}. Conveniently for numeric
+#' \eqn{0.5 \int( \sqrt{f(x)} - \sqrt{g(x)} )^2 dx}. Conveniently for numeric
 #' integration, the expression can be written as the integral of a product
 #' instead of a difference: \eqn{1 - \int \sqrt{f(x)g(x)} dx}. H is related
 #' to the Bhattacharyya coefficient BC: \eqn{H = \sqrt{1 - BC}}. Elsewhere,
 #' Hellinger distances are sometimes reported as the square (\eqn{H^2})
-#' [@Warren08; DiCola17], or are not rescaled and so range
-#' from 0 to \sqrt(2) [@Nikulin01].
+#' (e.g. Warren et al. 2008, Di Cola et al. 2017), or are not rescaled
+#' and so range from 0 to \eqn{\sqrt 2} (Encyclopedia of Mathematics).
 #'
 #' @param d1,d2 A density distribution.
 #' @param a,b The lower and upper limits of comparison.
 #' Each density will be rescaled such that the integral over the
-#' interval `[a,b]` sums to unity. If empty, the minimum and maximum
-#' of the intersection of `d1$x` and `d2$x` will be used.
+#' interval \code{[a,b]} sums to unity. If empty, the minimum and maximum
+#' of the intersection of \code{d1$x} and \code{d2$x} will be used.
 #' @return A numeric value between 0 and 1 inclusive.
 #' @export
+#' @references
+#' \insertRef{DiCola17}{kerneval}
+#'
+#' \insertRef{Nikulin01}{kerneval}
+#'
+#' \insertRef{Warren08}{kerneval}
 
 hell <- function (d1, d2, a = NULL, b = NULL) {
   if (min(d1$x) > max(d2$x) | max(d1$x) < min(d2$x)){
@@ -106,7 +117,6 @@ hell <- function (d1, d2, a = NULL, b = NULL) {
 #' @inheritParams hell
 #' @return A numeric value between 0 and 1 inclusive.
 #' @export
-#' @importFrom Rdpack reprompt
 #' @references
 #' \insertRef{Schoener68}{kerneval}
 
