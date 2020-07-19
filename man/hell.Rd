@@ -4,14 +4,15 @@
 \alias{hell}
 \title{Calculate Hellinger distance}
 \usage{
-hell(d1, d2, extrap = TRUE)
+hell(d1, d2, a = NULL, b = NULL)
 }
 \arguments{
 \item{d1, d2}{A density distribution.}
 
-\item{extrap}{Logical. If axes limits of \code{d1} and \code{d2} differ,
-should they be extrapolated to match? The density function
-will estimate 0 probability in the region of extrapolation.}
+\item{a, b}{The lower and upper limits of comparison.
+Each density will be rescaled such that the integral over the
+interval \code{[a,b]} sums to unity. If empty, the minimum and maximum
+of the intersection of \code{d1$x} and \code{d2$x} will be used.}
 }
 \value{
 A numeric value between 0 and 1 inclusive.
@@ -19,4 +20,22 @@ A numeric value between 0 and 1 inclusive.
 \description{
 The Hellinger distance (H) between two probability measures ranges from 0
 (identical distributions) to 1 (non-overlapping distributions).
+}
+\details{
+Let f(x) and g(x) be the probability density functions for comparison.
+The squared Hellinger distance is
+\eqn{0.5 \int( \sqrt{f(x)} - \sqrt{g(x)} )^2 dx}. Conveniently for numeric
+integration, the expression can be written as the integral of a product
+instead of a difference: \eqn{1 - \int \sqrt{f(x)g(x)} dx}. H is related
+to the Bhattacharyya coefficient BC: \eqn{H = \sqrt{1 - BC}}. Elsewhere,
+Hellinger distances are sometimes reported as the square (\eqn{H^2})
+(e.g. Warren et al. 2008, Di Cola et al. 2017), or are not rescaled
+and so range from 0 to \eqn{\sqrt 2} (Encyclopedia of Mathematics).
+}
+\references{
+\insertRef{DiCola17}{kerneval}
+
+\insertRef{Nikulin01}{kerneval}
+
+\insertRef{Warren08}{kerneval}
 }
