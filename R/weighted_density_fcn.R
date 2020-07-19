@@ -88,6 +88,9 @@ selectbw <- function(Y, w, method='brt'){
 #' However, the choice of bandwidth is complicated. \code{wdens} calls the
 #' internal \code{selectbw} function to select a bandwidth following the
 #' user-specified bootstrap methods of Borrajo and others (2017).
+#' The bandwidth will be calculated for a Gaussian kernel, so \code{wdens}
+#' will not accept the additional arguments \code{kernel}, \code{window}, or
+#' \code{width}. Other arguments will be passed to \code{\link[stats]{density}}.
 #'
 #' @seealso \code{\link{transdens}}
 #'
@@ -99,9 +102,9 @@ selectbw <- function(Y, w, method='brt'){
 #' @return An S3 density.
 #' @export
 #' @references
-#' \insertRef{Jones91}{kerneval}
-#'
 #' \insertRef{Borrajo17}{kerneval}
+#'
+#' \insertRef{Jones91}{kerneval}
 
 wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
   wts <- 1/w(x)
@@ -124,15 +127,21 @@ wdens <- function(x, w, bw='brt', reflect=FALSE, a=NULL, b=NULL, ...){
     h <- selectbw(x, w, method = bw)
   }
 
+  # check that user didn't specify kernel/window or width arguments
+  forbid <- c('kernel','window','width')
+  args <- list(...)
+  if (length(args) > 0){
+    checkForbid <- match(forbid, names(args))
+    if ( any( !is.na(checkForbid)) ){
+      stop('argument not allowed; see function details')
+    }
+  }
+
   if (reflect){
     kde <- density.reflected(x, bw = h, lower = a, upper = b, weights = wts, ...)
   } else {
     kde <- stats::density(x, bw = h, from = a, to = b, weights = wts, ...)
   }
 
-#  f <- stats::approxfun(kde$x, kde$y)
-#  lwr <- min(kde$x)
-#  upr <- max(kde$x)
-#  append(list(f=f, lower=lwr, upper=upr), kde)
   return(kde)
 }
