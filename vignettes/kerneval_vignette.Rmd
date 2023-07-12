@@ -2,7 +2,7 @@
 title: |
   Introduction to the 'kerneval' package for density estimation 
   ![](kerneval_hex_sticker.png){width=1.75in}
-author: "Gwen S Antell"
+author: "Gawain T Antell"
 date: "`r Sys.Date()`"
 output: pdf_document
 bibliography: vignette_bib.bib
@@ -15,7 +15,7 @@ vignette: >
 ```{r setup, include = FALSE}
 library(pracma)
 library(GoFKernel)
-#devtools::install_github('GwenAntell/kerneval')
+#devtools::install_github('GawainAntell/kerneval')
 library(kerneval)
 
 knitr::opts_chunk$set(

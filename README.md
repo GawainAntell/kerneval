@@ -12,12 +12,12 @@ If you are new to kernel density estimation of probability densities, the introd
 You can install kerneval in R with:
 
 ``` r
-devtools::install_github('GwenAntell/kerneval')
+devtools::install_github('GawainAntell/kerneval')
 ```
 
 ## References
 
-Antell, G.S., Fenton, I.F., Valdes, P., and Saupe, E.E. (2021). "Thermal niches of planktonic foraminifera are static throughout glacial-interglacial climate change." Proceedings of the National Academy of Sciences. https://doi.org/10.1073/pnas.2017105118
+Antell, G.T., Fenton, I.F., Valdes, P., and Saupe, E.E. (2021). "Thermal niches of planktonic foraminifera are static throughout glacial-interglacial climate change." Proceedings of the National Academy of Sciences. https://doi.org/10.1073/pnas.2017105118
 
 Barmi, H.E., and Simonoff, J.S. (2000). "Transformation-Based Density Estimation for Weighted Distributions." Journal of Nonparametric Statistics 12 (6): 861–78.
 
